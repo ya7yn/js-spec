@@ -1,5 +1,5 @@
 describe("A newly created Tic-Tac-Toe", function() { with (this) {
-	before(function() {
+	before("each", function() {
 		this.game = new TicTacToe();
 	});
 	
