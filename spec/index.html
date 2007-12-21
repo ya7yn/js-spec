@@ -1,0 +1,68 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN"
+	"http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en" lang="en">
+<head>
+	<meta http-equiv="Content-Type" content="text/html; charset=utf-8"/>
+	<title>JsSpec test</title>
+	<script type="text/javascript" src="../lib/prototype.js"></script>
+	<script type="text/javascript" src="../dist/jsspec.js"></script>
+</head>
+
+<body>
+<script type="text/javascript" charset="utf-8">
+  Person = Class.create({
+    initialize: function(name, age, gender) {
+      this.name = name;
+      this.age = age;
+      this.gender = gender;
+    },
+    inspect: function() {
+      return "<#Person: #{name}>".interpolate(this);
+    }
+  });
+  
+  Parent = Class.create(Person, {
+    initialize: function($super, name, age, gender, kids) {
+      $super(name, age, gender);
+      this.children = [];
+      (kids || []).map(this.adopt.bind(this));
+    },
+    adopt: function(kid) {
+      this.children.push(kid);
+      kid[this.gender.match(/^f/) ? "mother" : "father"] = this;
+    }
+  });
+  
+  Child = Class.create(Person, {
+    initialize: function($super, name, age, gender, mother, father) {
+      $super(name, age, gender);
+      this.mother = mother;
+      this.father = father;
+    }
+  });
+  
+  with (Spec) {
+    
+    describe("Bobby's mum", function() { with(this) {
+      before("each", function() {
+        this.bobby = new Child("Bobby", 3, "m");
+        this.mum = new Parent("Carla", 24, "f");
+        this.mum.adopt(this.bobby);
+      });
+      
+      it("should have 1 kid", function() {
+        return this.mum.should( have(1, "children") );
+      });
+      
+      it("should have bobby among her kids", function() {
+        return this.mum.children.should( include(this.bobby) );
+      });
+    }});
+    
+  }
+  
+  Spec.run();
+</script>
+
+</body>
+</html>
