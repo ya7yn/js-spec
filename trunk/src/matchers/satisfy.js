@@ -1,23 +1,22 @@
-Object.extend(Spec.Matchers.Helpers, {
+Matcher.addHelpers({
 	satisfy: function(block) {
-		return new Spec.Matchers.Satisfy(block);
+		return new Matcher.Satisfy(block);
 	}
 });
 
-Spec.Matchers.Satisfy = Class.create({
+Matcher.create("Satisfy", {
 	initialize: function(block) {
 		this.block = block;
 	},
-	matches: function(target, block) {
-		if (block) this.block = block;
-		this.target = target;
-		return this.block(target);
+	matches: function(actual) {
+		this.actual = actual;
+		return this.block(actual);
 	},
 	failureMessage: function() {
-		return "expected " + Object.inspect(this.target) + " to satisfy the block";
+		return "expected " + Object.inspect(this.actual) + " to satisfy the block";
 	},
 	negativeFailureMessage: function() {
-		return "expected " + Object.inspect(this.target) + " not to satisfy the block";
+		return "expected " + Object.inspect(this.actual) + " not to satisfy the block";
 	}
 });
 

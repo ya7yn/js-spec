@@ -16,8 +16,8 @@ Spec.Expectation = {
 	}
 };
 
-Object.extend(Spec, Spec.Matchers.Helpers);
-Spec.satisfy = Spec.describe = function(contextName, map) {
+Object.extend(Spec, Matcher.Helpers);
+Spec.describe = function(contextName, map) {
 	new Spec.Context(contextName, map);
 };
 

@@ -1,16 +1,16 @@
-Object.extend(Spec.Matchers.Helpers, {
+Matcher.addHelpers({
 	respondTo: function() {
-		return new Spec.Matchers.RespondTo($A(arguments));
+		return new Matcher.RespondTo($A(arguments));
 	}
 });
 
-Spec.Matchers.RespondTo = Class.create({
+Matcher.create("RespondTo", {
 	initialize: function(names) {
 		this.names = names;
 	},
-	matches: function(target) {
-		this.target = target;
-		this.nonResponsive = this.names.reject(Object.respondTo.curry(target));
+	matches: function(actual) {
+		this.actual = actual;
+		this.nonResponsive = this.names.reject(Object.respondTo.curry(actual));
 		return this.nonResponsive.size() == 0;
 	},
 	failureMessage: function() {
@@ -20,4 +20,3 @@ Spec.Matchers.RespondTo = Class.create({
 		return "expected target not to respond to " + this.names.join(", ");
 	}
 });
-

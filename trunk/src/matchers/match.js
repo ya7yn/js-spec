@@ -1,16 +1,16 @@
-Object.extend(Spec.Matchers.Helpers, {
+Matcher.addHelpers({
 	match: function(expected) {
-		return new Spec.Matchers.Match(expected);
+		return new Matcher.Match(expected);
 	}
 });
 
-Spec.Matchers.Match = Class.create({
+Matcher.create("Match", {
 	initialize: function(expected) {
 		this.expected = expected;
 	},
-	matches: function(target) {
-		this.target = target;
-		return this.target.match(this.expected);
+	matches: function(actual) {
+		this.actual = actual;
+		return this.actual.match(this.expected);
 	},
 	failureMessage: function() {
 		return this.message("");
@@ -19,7 +19,7 @@ Spec.Matchers.Match = Class.create({
 		return this.message("not ")
 	},
 	message: function(maybe_not) {
-		return "expected " + Object.inspect(this.target) + " " + maybe_not + "to match " + Object.inspect(this.expected);
+		return "expected " + Object.inspect(this.actual) + " " + maybe_not + "to match " + Object.inspect(this.expected);
 	}
 });
 

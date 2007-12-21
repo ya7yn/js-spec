@@ -1,17 +1,17 @@
-Object.extend(Spec.Matchers.Helpers, {
+Matcher.addHelpers({
 	change: function(receiver, message) {
-		return new Spec.Matchers.Change(receiver, message);
+		return new Matcher.Change(receiver, message);
 	}
 });
 
-Spec.Matchers.Change = Class.create({
+Matcher.create("Change", {
 	initialize: function(receiver, message) {
 		this.receiver = receiver;
 		this.message = message;
 		this.usingBy = this.usingFrom = this.usingTo = false;
 	},
-	matches: function(target) {
-		this.target = target;
+	matches: function(actual) {
+		this.actual = actual;
 		this.executeChange();
 		if (this.usingFrom && this.from != this.before)
 			return false;
@@ -24,7 +24,7 @@ Spec.Matchers.Change = Class.create({
 	executeChange: function() {
 		var proxied = this.receiver[this.message];
 		this.before = Object.isFunction(proxied) ? proxied() : proxied;
-		Object.isFunction(this.target) ? this.target() : eval(this.target);
+		Object.isFunction(this.actual) ? this.actual() : eval(this.actual);
 		this.after = Object.isFunction(proxied) ? proxied() : proxied;
 	},
 	failureMessage: function() {
@@ -57,4 +57,3 @@ Spec.Matchers.Change = Class.create({
 		return this;
 	}
 });
-

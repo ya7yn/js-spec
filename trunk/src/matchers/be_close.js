@@ -1,10 +1,10 @@
-Object.extend(Spec.Matchers.Helpers, {
+Matcher.addHelpers({
 	beClose: function(expected, delta) {
-		return new Spec.Matchers.BeClose(expected, delta);
+		return new Matcher.BeClose(expected, delta);
 	}
 });
 
-Spec.Matchers.BeClose = Class.create({
+Matcher.create("BeClose", {
 	initialize: function(expected, delta) {
 		this.expected = expected;
 		this.delta = delta;
