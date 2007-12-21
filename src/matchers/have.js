@@ -1,31 +1,31 @@
-Object.extend(Spec.Matchers.Helpers, {
+Matcher.addHelpers({
 	haveExactly: function(expected, collection) {
 		var args = $A(arguments).slice(2);
-		return new Spec.Matchers.Have(expected, collection, "exactly", args);
+		return new Matcher.Have(expected, collection, "exactly", args);
 	},
 	haveAtLeast: function(expected, collection) {
 		var args = $A(arguments).slice(2);
-		return new Spec.Matchers.Have(expected, collection, "at_least", args);
+		return new Matcher.Have(expected, collection, "at_least", args);
 	},
 	haveAtMost: function(expected, collection) {
 		var args = $A(arguments).slice(2);
-		return new Spec.Matchers.Have(expected, collection, "at_most", args);
-	}
+		return new Matcher.Have(expected, collection, "at_most", args);
+	},
+	have: 'haveExactly'
 });
-Spec.Matchers.Helpers.have = Spec.Matchers.Helpers.haveExactly;
 
-Spec.Matchers.Have = Class.create({
+Matcher.create("Have", {
 	initialize: function(expected, collection, relativity, args) {
 		this.expected = expected == "no" ? 0 : expected;
 		this.collection = collection;
 		this.relativity = relativity || "exactly";
 		this.args = args || [];
 	},
-	matches: function(target) {
-		var elements = Object.isFunction(target[this.collection])
-			? target[this.collection].apply(target, this.args)
-			: target[this.collection];
-		this.actual = Object.isFunction(elements.size) ? elements.size() : elements.length;
+	matches: function(actual) {
+		var actuals = Object.isFunction(actual[this.collection])
+			? actual[this.collection].apply(actual, this.args)
+			: actual[this.collection];
+		this.actual = Object.isFunction(actuals.size) ? actuals.size() : actuals.length;
 		switch (this.relativity) {
 			case "exactly":  return this.expected == this.actual;
 			case "at_least": return this.expected <= this.actual;
@@ -50,4 +50,3 @@ Spec.Matchers.Have = Class.create({
 		return (this.relativity.replace(/exactly/, "").replace(/_/, " ") + " ").replace(/^\s+/, '');
 	}
 });
-

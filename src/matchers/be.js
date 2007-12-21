@@ -1,61 +1,59 @@
-Object.extend(Spec.Matchers.Helpers, {
+Matcher.addHelpers({
 	be: function(expected) {
-		return new Spec.Matchers.Be("===", expected);
+		return new Matcher.Be("===", expected);
 	},
 	equal: function(expected) {
-		return new Spec.Matchers.Be("==", expected);
+		return new Matcher.Be("==", expected);
 	},
 	beLessThan: function(expected) {
-		return new Spec.Matchers.Be("<", expected);
+		return new Matcher.Be("<", expected);
 	},
 	beLessOrEqualThan: function(expected) {
-		return new Spec.Matchers.Be("<=", expected);
+		return new Matcher.Be("<=", expected);
 	},
 	beGreaterThan: function(expected) {
-		return new Spec.Matchers.Be(">", expected);
+		return new Matcher.Be(">", expected);
 	},
 	beGreaterOrEqualThan: function(expected) {
-		return new Spec.Matchers.Be(">=", expected);
+		return new Matcher.Be(">=", expected);
 	}
 });
 
-Spec.Matchers.Be = Class.create({
+Matcher.create("Be", {
 	initialize: function(comparison, expected) {
 		this.expected = expected;
 		this.comparison = comparison;
 	},
-	matches: function(target) {
-		this.target = target;
+	matches: function(actual) {
+		this.actual = actual;
 		return this[this.comparison]();
 	},
 	"===": function() {
-		return this.target === this.expected;
+		return this.actual === this.expected;
 	},
 	"==": function() {
-		return Object.isArray(this.expected) && Object.isArray(this.target)
-			? this.expected.size() == this.target.size() && 
-					this.expected.all(function(element, index) { return element == this.target[index] }.bind(this))
-			: this.target == this.expected;
+		return Object.isArray(this.expected) && Object.isArray(this.actual)
+			? this.expected.size() == this.actual.size() && 
+					this.expected.all(function(element, index) { return element == this.actual[index] }.bind(this))
+			: this.actual == this.expected;
 	},
 	"<": function() {
-		return this.target < this.expected;
+		return this.actual < this.expected;
 	},
 	"<=": function() {
-		return this.target <= this.expected;
+		return this.actual <= this.expected;
 	},
 	">": function() {
-		return this.target > this.expected;
+		return this.actual > this.expected;
 	},
 	">=": function() {
-		return this.target >= this.expected;
+		return this.actual >= this.expected;
 	},
-	failureMessage: function(relation) {
-		var relation = relation || " ";
-		return "expected " + Object.inspect(this.expected) + relation + "to be " + this.comparison.replace(/_/, " ") + 
-			" " + Object.inspect(this.target);
+	failureMessage: function(maybe_not) {
+		return "expected " + Object.inspect(this.expected) + (maybe_not || " ") + "to be " + this.comparison.replace(/_/, " ") + 
+			" " + Object.inspect(this.actual);
 	},
 	negativeFailureMessage: function() {
 		return this.failureMessage(" not ");
 	}
 });
-

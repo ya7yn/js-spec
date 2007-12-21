@@ -55,3 +55,7 @@ Spec.Context.register = function(context) {
 Spec.run = function() {
 	Spec.Context._contexts.invoke("run");
 }
+
+Spec.specify = function() {
+	return Spec.Context._contexts.invoke("describe").join("\n\n");
+}

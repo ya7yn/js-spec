@@ -1,16 +1,16 @@
-Object.extend(Spec.Matchers.Helpers, {
+Matcher.addHelpers({
 	include: function() {
-		return new Spec.Matchers.Include($A(arguments));
+		return new Matcher.Include(arguments);
 	}
 });
 
-Spec.Matchers.Include = Class.create({
+Matcher.create("Include", {
 	initialize: function(expecteds) {
-		this.expecteds = expecteds;
+		this.expecteds = $A(expecteds);
 	},
-	matches: function(target) {
-		this.target = target;
-		return this.expecteds.all(function(expected) { return target.include(expected) });
+	matches: function(actual) {
+		this.actual = actual;
+		return this.expecteds.all(function(expected) { return actual.include(expected) });
 	},
 	failureMessage: function() {
 		return this.message();
@@ -19,9 +19,9 @@ Spec.Matchers.Include = Class.create({
 		return this.message("not ");
 	},
 	message: function(maybe_not) {
-		return "expected #{target} #{maybe_not}to include #{expecteds}".interpolate({
+		return "expected #{actual} #{maybe_not}to include #{expecteds}".interpolate({
 			maybe_not: maybe_not || "",
-			target:    this.target.inspect(),
+			actual:    this.actual.inspect(),
 			expecteds: this.expecteds.map(Object.inspect).join(", ")
 		});
 	}
