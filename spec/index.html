@@ -47,7 +47,7 @@
         $("some_container").should( have(1, "childElements") );
         [1, 2, 3, 4].should( have(2, "slice", 0, 2) ); // equivalent to [1, 2, 3, 4].slice(0, 2).length.should( equal(2) )
         $("some_container").down("span").should_not( have_at_least(1, "childElements") );
-        
+        [1, 2, 3].should( have(3, "elements") );
       });
       
       it("should pass when asking if an enumerable includes some elements", function() {
