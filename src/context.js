@@ -37,10 +37,9 @@ Context = Class.create({
 		this.filters.afterAll.invoke("apply", sandbox);
 	},
 	toElement: function() {
-		var element = new Element("div");
+		var list, element = new Element("div");
 		element.insert(new Element("h3").update(this.name));
-		element.insert(new Element("ul"));
-		var list = element.down("ul");
+		element.insert(list = new Element("ul"));
 		this.specs.each(Element.insert.curry(list));
 		list.select("li").each(function(spec, index) { this.specs[index].id = spec.identify() }, this);
 		return element;
