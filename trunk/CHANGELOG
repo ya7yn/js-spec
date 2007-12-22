@@ -1,3 +1,5 @@
+- Allow something.should have(N, "elements"). If something.elements doesn't exist, then
+  it assumes something is an enumerable and calles size/gets length of it to compare with N
 - Fixed rake's task to include matchers in the source when building a package
 
 [0.2.2]

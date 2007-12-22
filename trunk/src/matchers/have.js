@@ -22,9 +22,7 @@ Matcher.create("Have", {
 		this.args = args || [];
 	},
 	matches: function(actual) {
-		var actuals = Object.respondTo(actual, this.collection)
-			? actual[this.collection].apply(actual, this.args)
-			: actual[this.collection];
+		var actuals = this.actualsFor(actual);
 		this.actual = Object.isFunction(actuals.size) ? actuals.size() : actuals.length;
 		switch (this.relativity) {
 			case "exactly":  return this.expected == this.actual;
@@ -48,5 +46,14 @@ Matcher.create("Have", {
 	},
 	readableRelativity: function() {
 		return (this.relativity.replace(/exactly/, "").replace(/_/, " ") + " ").replace(/^\s+/, '');
+	},
+	actualsFor: function(actual) {
+		if (!Object.respondTo(actual, this.collection) && this.collection == "elements") {
+			return actual;
+		} else if (Object.respondTo(actual, this.collection)) {
+			return actual[this.collection].apply(actual, this.args);
+		} else {
+			return actual[this.collection];
+		}
 	}
 });
