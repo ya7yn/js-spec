@@ -1,14 +1,14 @@
 Matcher.addHelpers({
-	change: function(receiver, message) {
-		return new Matcher.Change(receiver, message);
+	change: function(message) {
+		return new Matcher.Change(message);
 	}
 });
 
 Matcher.create("Change", {
-	initialize: function(receiver, message) {
-		this.receiver = receiver;
+	initialize: function(message) {
 		this.message = message;
 		this.usingBy = this.usingFrom = this.usingTo = false;
+		this.args = [];
 	},
 	matches: function(actual) {
 		this.actual = actual;
@@ -22,10 +22,9 @@ Matcher.create("Change", {
 		return this.before != this.after;
 	},
 	executeChange: function() {
-		var proxied = this.receiver[this.message];
-		this.before = Object.isFunction(proxied) ? proxied() : proxied;
-		Object.isFunction(this.actual) ? this.actual() : eval(this.actual);
-		this.after = Object.isFunction(proxied) ? proxied() : proxied;
+		this.before = Object.respondTo(this.actual, this.message) ? this.actual[this.message]() : this.actual[this.message];
+		Object.respondTo(this.actual, this.receiver) ? this.actual[this.receiver].apply(this.actual, this.args) : this.actual[this.receiver];
+		this.after = Object.respondTo(this.actual, this.message) ? this.actual[this.message]() : this.actual[this.message];
 	},
 	failureMessage: function() {
 		if (this.usingTo)
@@ -55,5 +54,14 @@ Matcher.create("Change", {
 		this.usingTo = true;
 		this.to = to;
 		return this;
+	},
+	after: function() {
+		this.args = $A(arguments)
+		this.receiver = this.args.shift();
+		return this;
 	}
 });
+
+["afterCalling", "inResponseTo"].each(function(method) {
+	Matcher.Change.prototype[method] = Matcher.Change.prototype[method.underscore()] = Matcher.Change.prototype.after;
+})

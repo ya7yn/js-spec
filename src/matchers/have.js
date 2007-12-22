@@ -22,7 +22,7 @@ Matcher.create("Have", {
 		this.args = args || [];
 	},
 	matches: function(actual) {
-		var actuals = Object.isFunction(actual[this.collection])
+		var actuals = Object.respondTo(actual, this.collection)
 			? actual[this.collection].apply(actual, this.args)
 			: actual[this.collection];
 		this.actual = Object.isFunction(actuals.size) ? actuals.size() : actuals.length;
