@@ -18,24 +18,6 @@
 <script type="text/javascript" charset="utf-8">  
   with (Spec) {
     
-    describe("js-spec expectations", function() { with(this) {
-      
-      it("should handle passing specs", function() {
-        (1).should( equal(1) );
-      });
-      
-      it("should handle failures correctly", function() {
-        (1).should( be_greater_than(2) );
-      });
-      
-      it("should handle pending specs");
-      
-      it("should handle errors correctly", function() {
-        undefined.should( throw_an_error() );
-      });
-      
-    }});
-    
     describe("js-spec", function() { with(this) {
       
       it("should pass when doing simple comparisons", function() {
@@ -43,7 +25,8 @@
         (1).should( be_less_than(2) );
         (1).should( be_greater_than(0) );
         (1).should_not( equal(2) );
-        (1).should_not( be(1) ); // 'be' checks if it's the same object
+        (1).should( be(1) );
+        (1).should_not( be("1") );
       });
       
       it("should pass when checking if a value is within a delta of another", function() {
