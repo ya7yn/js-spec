@@ -15,38 +15,7 @@
     <span class="something"></span>
   </div>
   
-<script type="text/javascript" charset="utf-8">
-  Person = Class.create({
-    initialize: function(name, age, gender) {
-      this.name = name;
-      this.age = age;
-      this.gender = gender;
-    },
-    inspect: function() {
-      return "<#Person: #{name}>".interpolate(this);
-    }
-  });
-  
-  Parent = Class.create(Person, {
-    initialize: function($super, name, age, gender, kids) {
-      $super(name, age, gender);
-      this.children = [];
-      (kids || []).map(this.adopt.bind(this));
-    },
-    adopt: function(kid) {
-      this.children.push(kid);
-      kid[this.gender.match(/^f/) ? "mother" : "father"] = this;
-    }
-  });
-  
-  Child = Class.create(Person, {
-    initialize: function($super, name, age, gender, mother, father) {
-      $super(name, age, gender);
-      this.mother = mother;
-      this.father = father;
-    }
-  });
-  
+<script type="text/javascript" charset="utf-8">  
   with (Spec) {
     
     describe("js-spec expectations", function() { with(this) {
