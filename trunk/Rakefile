@@ -27,7 +27,7 @@ Rake::PackageTask.new('js_spec', SPEC_VERSION) do |package|
     '[A-Z]*',
     "dist/jsspec.js",
     'lib/**',
-    'src/**',
+    'src/**/**',
     'spec/**'
   )
 end
