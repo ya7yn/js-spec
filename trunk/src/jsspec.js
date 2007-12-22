@@ -4,9 +4,14 @@ var JsSpec = {
 	Version: '<%= SPEC_VERSION %>'
 };
 
-Object.respondTo = function(object, name) {
-	return Object.isFunction(object[name]);
-}
+Object.extend(Object, {
+	respondTo: function(object, name) {
+		return Object.isFunction(object[name]);
+	},
+	isNumber: function(object) {
+		return typeof object == "number" || object instanceof Number;
+	}
+})
 
 <%= include 'matcher.js',
 						'context.js',

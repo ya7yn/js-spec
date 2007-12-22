@@ -29,7 +29,9 @@ Matcher.create("Be", {
 		return this[this.comparison]();
 	},
 	"===": function() {
-		return this.actual === this.expected;
+		return Object.isNumber(this.actual) && Object.isNumber(this.expected)
+			? this.actual == this.expected
+			: this.actual === this.expected;
 	},
 	"==": function() {
 		return Object.isArray(this.expected) && Object.isArray(this.actual)
