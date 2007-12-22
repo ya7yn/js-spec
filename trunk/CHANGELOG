@@ -1,3 +1,5 @@
+[0.2.2]
+
 - Fixed (1).should(be(1)) to check if both are numbers, then return x == y, else x === y
   and patched Object.isNumber to check for instanceof if typeof doesn't work
 - ...I should've started keeping this long ago :-)
