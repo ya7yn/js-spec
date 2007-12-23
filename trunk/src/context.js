@@ -43,6 +43,10 @@ Context = Class.create({
 		this.specs.each(Element.insert.curry(list));
 		list.select("li").each(function(spec, index) { this.specs[index].id = spec.identify() }, this);
 		return element;
+	},
+	expect: function(object) {
+		Expectation.extend(object);
+		return object;
 	}
 });
 
