@@ -26,8 +26,11 @@ Expectation = (function() {
 	
 	var extend = function() {
 		$A(arguments).each(function(object) {
-			object.prototype.should = should;
-			object.prototype.shouldNot = object.prototype.should_not = shouldNot;
+			if (object.prototype) {
+				object = object.prototype;
+			}
+			object.should = should;
+			object.shouldNot = object.should_not = shouldNot;
 		});
 	};
 	
