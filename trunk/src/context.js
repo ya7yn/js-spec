@@ -37,11 +37,10 @@ Context = Class.create({
 		this.filters.afterAll.invoke("apply", sandbox);
 	},
 	toElement: function() {
-		var list, element = new Element("div");
-		element.insert(new Element("h3").update(this.name));
-		element.insert(list = new Element("ul"));
-		this.specs.each(Element.insert.curry(list));
-		list.select("li").each(function(spec, index) { this.specs[index].id = spec.identify() }, this);
+		var element = new Element("div").insert(new Element("h3").update(this.name)), 
+		    table = new Element("table", { cellspacing: 0, cellpadding: 0 });
+		element.insert(table);
+		this.specs.each(Element.insert.curry(table));
 		return element;
 	},
 	expect: function(object) {
@@ -50,30 +49,36 @@ Context = Class.create({
 	}
 });
 
-Context.Spec = Class.create({
-	initialize: function(name, spec) {
-		this.name = name;
-		this.id = null;
-		this.spec = spec;
-		this.pending = !spec;
-		this.compiled = false;
-	},
-	compile: function(filters) {
-		if (!this.compiled && !this.pending) {
-			this.spec = filters.beforeEach.concat(this.spec).concat(filters.afterEach);
-			this.compiled = true;
+Context.Spec = Class.create((function() {
+	var specId = 0;
+	
+	return {
+		initialize: function(name, spec) {
+			this.name = name;
+			this.id = 'spec_' + (++specId);
+			this.spec = spec;
+			this.pending = !spec;
+			this.compiled = false;
+		},
+		compile: function(filters) {
+			if (!this.compiled && !this.pending) {
+				this.spec = filters.beforeEach.concat(this.spec).concat(filters.afterEach);
+				this.compiled = true;
+			}
+			return this;
+		},
+		run: function(sandbox) {
+			if (this.pending)
+				throw new Context.PendingSpec(this);
+			this.spec.invoke("apply", sandbox);
+		},
+		toElement: function() {
+			return new Element("tr", { id: this.id }).insert(
+				new Element("th", { scope: 'row' }).update(this.name)
+			);
 		}
-		return this;
-	},
-	run: function(sandbox) {
-		if (this.pending)
-			throw new Context.PendingSpec(this);
-		this.spec.invoke("apply", sandbox);
-	},
-	toElement: function() {
-		return new Element("li").update(this.name);
 	}
-});
+})());
 
 Context.PendingSpec = function(spec) {
 	this.name   = "Pending";
@@ -106,10 +111,10 @@ Runner = Class.create({
 		$(spec.id).addClassName("pending").insert({ top: this.label("pending") });
 	},
 	fail: function(spec, message) {
-		$(spec.id).addClassName("fail").insert({ top: this.label("failed") }).insert("<br/>with: " + message);
+		$(spec.id).addClassName("fail").insert({ top: this.label("failed") }).down("th").insert("<br/>with: " + message);
 	},
 	error: function(spec, message) {
-		$(spec.id).addClassName("error").insert({ top: this.label("error") }).insert("<br/>with: " + message);
+		$(spec.id).addClassName("error").insert({ top: this.label("error") }).down("th").insert("<br/>with: " + message);
 	},
 	createElement: function() {
 		var element = new Element("div");
@@ -117,7 +122,7 @@ Runner = Class.create({
 		return element;
 	},
 	label: function(text) {
-		return new Element("span", { className: "label" }).update("[" + text + "]");
+		return new Element("td", { className: "label" }).update("[" + text + "]");
 	}
 });
 
