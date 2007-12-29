@@ -85,24 +85,41 @@ Context.PendingSpec = function(spec) {
 	this.message = spec;
 }
 
-Runner = Class.create({
+Specs = Object.extend([], {
+	report: "HTMLReport",
+	register: Array.prototype.push,
+	run: function(element) {
+		var report = new Specs[Specs.report](element);
+		this.each(function(context) {
+			report.add(context);
+			context.each(function(spec) {
+				try {
+					spec.run();
+					report.pass(spec);
+				} catch(e) {
+					switch (e.name) {
+						case "Pending":          
+							return report.pending(spec);
+						case "UnmetExpectation": 
+							return report.fail(spec, e.message);
+						default:
+							return report.error(spec, e.message);
+					}
+				}
+			});
+		});
+	},
+	describe: function() {
+		return this.invoke("describe").join("\n\n");
+	}
+});
+
+Specs.HTMLReport = Class.create({
 	initialize: function(element) {
 		this.element = $(element) || $("spec_results") || this.createElement();
 	},
-	run: function(context) {
+	add: function(context) {
 		this.element.insert(context);
-		context.each(function(spec) {
-			try {
-				spec.run();
-				this.pass(spec);
-			} catch(e) {
-				switch (e.name) {
-					case "Pending":          return this.pending(spec);
-					case "UnmetExpectation": return this.fail(spec, e.message);
-					default:                 return this.error(spec, e.message);
-				}
-			}
-		}, this);
 	},
 	pass: function(spec) {
 		$(spec.id).addClassName("pass").insert({ top: this.label("passed") });
@@ -125,15 +142,3 @@ Runner = Class.create({
 		return new Element("td", { className: "label" }).update("[" + text + "]");
 	}
 });
-
-Specs = Object.extend([], {
-	register: Array.prototype.push,
-	run: function(element) {
-		var runner = new Runner(element);
-		this.each(runner.run.bind(runner));
-	},
-	describe: function() {
-		return this.invoke("describe").join("\n\n");
-	}
-});
-

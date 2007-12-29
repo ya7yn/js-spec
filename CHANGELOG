@@ -1,3 +1,5 @@
+- Change HTML report to a table, make multiple reports easy to use. Change reporter
+  by setting Specs.report to the name of the class [foca]
 - Allow Expectation.extend to work on instances instead of prototypable objects (?!)
   Add Context.expect as a shortcut to extend instances inside specs. [Michael Shuerig]
 - Allow something.should have(N, "elements"). If something.elements doesn't exist, 
