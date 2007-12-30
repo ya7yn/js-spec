@@ -50,8 +50,7 @@ Context = Class.create({
 });
 
 Context.Spec = Class.create((function() {
-	var specId = 0;
-	
+	var specId = 0;	
 	return {
 		initialize: function(name, spec) {
 			this.name = name;
@@ -91,7 +90,7 @@ Specs = Object.extend([], {
 	run: function(element) {
 		var report = new Specs[Specs.report](element);
 		this.each(function(context) {
-			report.add(context);
+			report.beforeEach && report.beforeEach(context);
 			context.each(function(spec) {
 				try {
 					spec.run();
@@ -107,6 +106,7 @@ Specs = Object.extend([], {
 					}
 				}
 			});
+			report.afterEach && report.afterEach(context);
 		});
 	},
 	describe: function() {
@@ -118,20 +118,20 @@ Specs.HTMLReport = Class.create({
 	initialize: function(element) {
 		this.element = $(element) || $("spec_results") || this.createElement();
 	},
-	add: function(context) {
+	beforeEach: function(context) {
 		this.element.insert(context);
 	},
 	pass: function(spec) {
-		$(spec.id).addClassName("pass").insert({ top: this.label("passed") });
+		$(spec.id).addClassName("pass").insert({ top: this.label("passed") }).insert(new Element("td").update("&nbsp;"));
 	},
 	pending: function(spec) {
-		$(spec.id).addClassName("pending").insert({ top: this.label("pending") });
+		$(spec.id).addClassName("pending").insert({ top: this.label("pending") }).insert(new Element("td").update("&nbsp;"));
 	},
 	fail: function(spec, message) {
-		$(spec.id).addClassName("fail").insert({ top: this.label("failed") }).down("th").insert("<br/>with: " + message);
+		$(spec.id).addClassName("fail").insert({ top: this.label("failed") }).insert(new Element("td").update(message));
 	},
 	error: function(spec, message) {
-		$(spec.id).addClassName("error").insert({ top: this.label("error") }).down("th").insert("<br/>with: " + message);
+		$(spec.id).addClassName("error").insert({ top: this.label("error") }).insert(new Element("td").update(message));
 	},
 	createElement: function() {
 		var element = new Element("div");
@@ -140,5 +140,48 @@ Specs.HTMLReport = Class.create({
 	},
 	label: function(text) {
 		return new Element("td", { className: "label" }).update("[" + text + "]");
+	}
+});
+
+Specs.ConsoleReport = Class.create({
+	initialize: function() {
+		this.passed = this.failed = this.pending = this.errors = 0;
+		this.failureMessages = [];
+		this.errorMessages = [];
+	},
+	beforeEach: function() {
+		this.startTime = new Date().getTime();
+	},
+	afterEach: function() {
+		var duration = new Date().getTime() - this.startTime;
+		var total = this.passed + this.failed + this.pending + this.errors;
+		if (this.failed) print("\n\nFailures:\n" + this.failureMessages.join("\n"));
+		if (this.errors) print("\nErrors:\n" + this.errorMessages.join("\n"));
+		
+		var result = "\n";
+		if (this.passed)  result += "#{passed} passed. ";
+		if (this.pending) result += "#{pending} pending. ";
+		if (this.failed)  result += "#{failed} failure" + (this.failed == 1 ? ". " : "s. ");
+		if (this.errors)  result += "#{errors} error" + (this.errors == 1 ? ". " : "s. ");
+		print(result.interpolate(this) + "\n");
+		print("Run " + total + " examples in " + (duration / 1000) + "seconds.\n");
+	},
+	pass: function() {
+		this.passed++;
+		print(".");
+	},
+	pending: function(spec) {
+		this.pending++;
+		print("P");
+	},
+	fail: function(spec, message) {
+		this.failed++;
+		print("F");
+		this.failureMessages.push("- '#{name}' with #{message}".interpolate({ name: spec.name, message: message }));
+	},
+	error: function(spec, message) {
+		this.errors++;
+		print("E");
+		this.errorMessages.push("- '#{name}' with #{message}".interpolate({ name: spec.name, message: message }));
 	}
 });
