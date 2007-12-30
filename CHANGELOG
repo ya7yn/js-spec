@@ -1,3 +1,7 @@
+- Added ConsoleReporter, that works like an rspec report (prints dots and letters).
+  Should work with Rhino [foca, Matthieu Riou]
+- Changed Report "callbacks" to be beforeEach and afterEach. They receive the report
+  as a parameter [foca]
 - Change HTML report to a table, make multiple reports easy to use. Change reporter
   by setting Specs.report to the name of the class [foca]
 - Allow Expectation.extend to work on instances instead of prototypable objects (?!)
